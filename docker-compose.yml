@@ -1,0 +1,33 @@
+version: '3.9'
+services:
+  api:
+    build: .
+    ports:
+      - 5000:5000
+    # volumes:
+    #   - ./:/app
+    #   - /app/node_modules
+    #   - /app/dist
+    environment:
+      DB_USER: api-db-admin
+      DB_PASSWORD: api-db-admin-password
+      DB_NAME: api-ts-db
+      # DB_URL: mongodb://mongo_db:27017
+    # env_file:
+    # - ./.env
+    depends_on:
+      - db
+
+  db:
+    image: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: api-db-admin
+      MONGO_INITDB_ROOT_PASSWORD: api-db-admin-password
+    # restart: always
+    # ports:
+    # - 2717:27017
+    volumes:
+      - mongo-db:/data/db
+
+volumes:
+  mongo-db: {}
