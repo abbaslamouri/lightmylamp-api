@@ -9,9 +9,9 @@ services:
     #   - /app/node_modules
     #   - /app/dist
     environment:
-      DB_USER: api-db-admin
-      DB_PASSWORD: api-db-admin-password
-      DB_NAME: api-ts-db
+      DB_USER: lightmylamp-db-user
+      DB_PASSWORD: Wjshg^&JXslsp
+      # DB_NAME: lightmylamp
       # DB_URL: mongodb://mongo_db:27017
     # env_file:
     # - ./.env
@@ -21,8 +21,8 @@ services:
   db:
     image: mongo
     environment:
-      MONGO_INITDB_ROOT_USERNAME: api-db-admin
-      MONGO_INITDB_ROOT_PASSWORD: api-db-admin-password
+      MONGO_INITDB_ROOT_USERNAME: lightmylamp-db-user
+      MONGO_INITDB_ROOT_PASSWORD: Wjshg^&JXslsp
     # restart: always
     # ports:
     # - 2717:27017

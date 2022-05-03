@@ -1,9 +1,68 @@
-const mongoose = require('mongoose')
-const jwt = require('jsonwebtoken')
-const crypto = require('crypto')
-const bcrypt = require('bcryptjs')
+import { Schema, model, Types } from 'mongoose'
+import jwt from 'jsonwebtoken'
+import crypto from 'crypto'
+import bcrypt from 'bcryptjs'
 
-const schema = new mongoose.Schema(
+interface IPhone {
+  phoneType: string
+  phoneNumber: string
+  phoneCountryCode: Types.ObjectId
+}
+
+interface IshippingAddress {
+  company: string
+  name: string
+  email: string
+  addressLine1: string
+  addressLine2: string
+  city: string
+  state: Types.ObjectId
+  postalCode: string
+  country: Types.ObjectId
+  addressType: string
+  isDefault: Boolean
+  selected: Boolean
+  phones: Array<IPhone>
+}
+
+interface IBillingAddress {
+  addressLine1: string
+  addressLine2: string
+  city: string
+  state: Types.ObjectId
+  postalCode: string
+  country: Types.ObjectId
+}
+
+interface IUser {
+  stripeCustomerId: String
+  name: string
+  email: string
+  title: string
+  shippingAddresses: Array<IshippingAddress>
+  billingAddress: IBillingAddress
+  description: string
+  sortOrder: Number
+  parent: Types.ObjectId
+  gallery: Types.ObjectId
+  avatar: Types.ObjectId
+  role: string
+  password: unknown
+  // passwordConfirm: string
+  active: boolean
+  deliveryInstructions: string
+  passwordResetToken: unknown
+  passwordResetExpires: unknown
+  passwordChangeDate: number
+  createdAt: Date
+  updatedAt: Date
+  getSinedJwtToken(): Promise<string>
+  createPasswordResetToken(): Promise<string>
+  checkPassword(password: string, hash: string): Promise<boolean>
+  hasPasswordChanged(JWTTimestamp: number): Promise<boolean>
+}
+
+const schema = new Schema<IUser>(
   {
     stripeCustomerId: {
       type: 'String',
@@ -28,35 +87,25 @@ const schema = new mongoose.Schema(
     title: {
       type: String,
       trim: true,
-      maxlength: [20, 'Name cannot be more than 20 characters long'],
+      maxlength: [20, 'Title cannot be more than 20 characters long'],
     },
     shippingAddresses: [
       {
-        company: '',
-        name: {
-          type: String,
-        },
-        email: {
-          type: String,
-        },
-        addressLine1: {
-          type: String,
-        },
-        addressLine2: {
-          type: String,
-        },
-        city: {
-          type: String,
-        },
+        company: String,
+        name: String,
+        email: String,
+        addressLine1: String,
+        addressLine2: String,
+        city: String,
         state: {
-          type: mongoose.Schema.ObjectId,
+          type: Schema.Types.ObjectId,
           ref: 'State',
         },
         postalCode: {
           type: String,
         },
         country: {
-          type: mongoose.Schema.ObjectId,
+          type: Schema.Types.ObjectId,
           ref: 'Country',
         },
         addressType: {
@@ -75,45 +124,29 @@ const schema = new mongoose.Schema(
             },
             phoneNumber: String,
             phoneCountryCode: {
-              type: mongoose.Schema.ObjectId,
+              type: Schema.Types.ObjectId,
               ref: 'Country',
             },
           },
         ],
       },
     ],
-
     billingAddress: {
-      address1: {
-        type: String,
-        // default: ''
-      },
-      address2: {
-        type: String,
-        // default: ''
-      },
-      city: {
-        type: String,
-        // default: ''
-      },
+      address1: String,
+      address2: String,
+      city: String,
       state: {
-        type: mongoose.Schema.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: 'State',
-        // default: '',
       },
-      postalCode: {
-        type: String,
-        // default: ''
-      },
+      postalCode: String,
       country: {
-        type: mongoose.Schema.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: 'Country',
-        // default: '',
       },
     },
-
     avatar: {
-      type: mongoose.Schema.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: 'Media',
     },
     role: {
@@ -127,17 +160,16 @@ const schema = new mongoose.Schema(
       minlength: [8, 'Password must contain at least 8 charcaters'],
       select: false,
     },
-    passwordConfirm: {
-      type: String,
-      // required: [true, 'Confirmation Pasword is required'],
-      validate: {
-        // Only works on save()/create()
-        validator: function (val) {
-          return val === this.password
-        },
-        message: 'Passwords dont match',
-      },
-    },
+    // passwordConfirm: {
+    //   type: String,
+    //   validate: {
+    //     // Only works on save()/create()
+    //     validator: function (val: string) {
+    //       return val === this.password
+    //     },
+    //     message: 'Passwords dont match',
+    //   },
+    // },
     active: {
       type: Boolean,
       default: false,
@@ -147,10 +179,9 @@ const schema = new mongoose.Schema(
       type: String,
       maxlength: [2000, '2000 characters maximum'],
     },
-
     passwordResetToken: String,
-    passwordResetExpires: Date,
-    passwordChangeDate: Date,
+    passwordResetExpires: Number,
+    passwordChangeDate: Number,
   },
   {
     timestamps: true,
@@ -161,9 +192,8 @@ const schema = new mongoose.Schema(
 schema.pre('save', async function (next) {
   if (!this.isModified('password')) return next()
   const salt = await bcrypt.genSalt(12)
-  this.password = await bcrypt.hash(this.password, salt)
-  this.passwordConfirm = undefined
-  next()
+  this.password = await bcrypt.hash(this.password as string, salt)
+  return next()
 })
 
 schema.pre('save', async function (next) {
@@ -172,15 +202,15 @@ schema.pre('save', async function (next) {
   next()
 })
 
-schema.methods.getSinedJwtToken = function () {
-  return jwt.sign({ id: this._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN })
+schema.methods.getSinedJwtToken = async function () {
+  return jwt.sign({ id: this._id }, process.env.JWT_SECRET as string, { expiresIn: process.env.JWT_EXPIRES_IN })
 }
 
-schema.methods.checkPassword = async function (password, hash) {
+schema.methods.checkPassword = async function (password: string, hash: string) {
   return await bcrypt.compare(password, hash)
 }
 
-schema.methods.hasPasswordChanged = async function (JWTTimestamp) {
+schema.methods.hasPasswordChanged = async function (JWTTimestamp: number) {
   if (this.passwordChangeDate) {
     return parseInt(this.passwordChangeDate.getTime(), 10) / 1000 > JWTTimestamp
   }
@@ -190,8 +220,9 @@ schema.methods.hasPasswordChanged = async function (JWTTimestamp) {
 schema.methods.createPasswordResetToken = async function () {
   const resetToken = crypto.randomBytes(32).toString('hex')
   this.passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex')
-  this.passwordResetExpires = Date.now() + process.env.PW_RESET_TOKEN_EXPIRESIN * 60 * 1000
+  this.passwordResetExpires = Date.now() + Number(process.env.PW_RESET_TOKEN_EXPIRESIN) * 60 * 1000
   return resetToken
 }
 
-module.exports = mongoose.model('User', schema)
+const User = model<IUser>('User', schema)
+export { User, IUser }
