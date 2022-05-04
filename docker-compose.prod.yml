@@ -26,7 +26,7 @@ services:
     #   DB_URL: mongodb://mongo_db:27017
     # env_file:
     # - ./.env
-    command: node dist/server.js
+    command: node dist/src/server.js
 
     # depends_on:
     #   - mongo_db

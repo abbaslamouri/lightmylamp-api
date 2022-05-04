@@ -4,5 +4,5 @@ export default {
   DB_NAME: process.env.DB_NAME || 'lightmylamp-db',
   DB_USER: process.env.DB_USER || '',
   DB_PASSWORD: process.env.DB_PASSWORD || '',
-  PORT: process.env.PORT || 5000,
+  PORT: process.env.PORT || 4000,
 }

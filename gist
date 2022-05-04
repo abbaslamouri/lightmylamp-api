@@ -10,7 +10,7 @@ docker container prune -fv
 
 docker image prune -a
 
-docker exec -it name_or_id bash
+docker exec -it lightmylamp-api-api-1 bash
 
 docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
 docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
@@ -18,5 +18,7 @@ docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 docker-compose down 
 
 mongo -u "lightmylamp-db-user" -p "Wjshg^&JXslsp"
+
+printenv
 
 

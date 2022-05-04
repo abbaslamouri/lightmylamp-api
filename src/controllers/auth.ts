@@ -95,13 +95,10 @@ const signin = asyncHandler(async (req: Request, res: Response, next: NextFuncti
   const { email, password } = req.body
   if (!email || !password) return next(new AppError('Email and Password are required', 401, 'email_password_required'))
   const user = await User.findOne({ email }).select('+password')
-  if (!user || !(await user.checkPassword(password, user.password as string)))
-    return next(new AppError('Invalid email or password', 401, 'invalid_email'))
+  if (!user) return next(new AppError('Invalid email or password', 401, 'invalid_email'))
+  const passwordCheck = await user.checkPassword(password, user.password as string)
+  if (!passwordCheck) return next(new AppError('Invalid email or password', 401, 'invalid_password'))
   sendTokenResponse(res, 200, user)
-  // res.status(200).json({
-  //   status: 'success',
-  //   token: await signToken(user._id),
-  // })
 })
 
 const signout = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {

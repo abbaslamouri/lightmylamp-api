@@ -17,7 +17,7 @@ services:
     volumes:
       - ./:/app
       - /app/node_modules
-      - /app/dist
+      # - /app/dist
     environment:
       - NODE_ENV=development
     #   PORT: 5000

@@ -7,14 +7,13 @@ RUN if [ "$NODE_ENV" = "development" ]; \
   then npm install; \
   else npm install --only=production; \
   fi
-
-COPY . ./
+COPY . .
 RUN npm run build
-ENV PORT 5000
-EXPOSE $PORT
+# ENV PORT 4000
+# EXPOSE $PORT
 RUN ls -la
 # CMD ["npm", "run", "dev"]
-CMD ["node", "dist/server.js"]
+# CMD ["node", "dist/server.js"]
 
 
 
