@@ -1,50 +1,55 @@
-import { RequestHandler, Request, Response, NextFunction } from 'express'
+import { Request, Response, NextFunction } from 'express'
 import colors from 'colors'
-import AppError from './AppError'
 
-const sendError = (res: Response, error: AppError) => {
+const sendError = (res: Response, err: any) => {
+  const status = err.status ? err.status : 'error'
+  const statusCode = err.statusCode ? err.statusCode : 500
   if (process.env.NODE_ENV === 'production') {
-    if (error.isOperational) {
-      res.status(error.statusCode).json({
-        status: error.status,
-        message: error.message ? error.message.split(',').join('<br>') || 'Server error' : '',
-      })
-    } else {
-      res.status(500).json({
-        status: 'error',
-        message: 'Something went terribly wrong',
-      })
-    }
-  } else if (process.env.NODE_ENV === 'development') {
-    console.log('VVVVVVV', error)
-    res.status(200).json({
-      error,
-      errorCode: error.errorCode,
-      status: error.status,
-      message: error.message ? error.message.split(',').join('<br>') || 'Server error' : '',
-      stack: error.stack,
+    let message = ''
+    if (err.custom) message = err.message
+    else message = 'Something went terribly wrong'
+    res.status(statusCode).json({
+      status,
+      message,
+    })
+  }
+  if (process.env.NODE_ENV === 'development') {
+    res.status(statusCode).json({
+      message: err.message,
+      err: err,
+      stack: err.stack,
     })
   }
 }
 
-const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
-  // console.log(colors.red.bold('ERRRRRR', err.message))
+const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
+  console.log(colors.red.bold(`ERRRRRR', ${err}`))
+  // res.json({
+  //   message: err.message,
+  //   err: err,
+  //   stack: err.stack,
+  // })
   // console.log(colors.red.bold('STACK', err.stack))
   // res.status(500).json('error', { error: err })
-  // let error = {}
+  // let error = { ...err }
   // console.log('AAAAAAA', typeof err, object)
-  // if (err.name === 'CastError') {
+  if (err.custom) {
+  }
+
+  if (err.code === 11000) {
+    err.statusCode = 400
+    err.custom = true
+    const field = Object.keys(err.keyValue)[0]
+    const fieldValue = Object.values(err.keyValue)[0]
+    err.message = `${
+      field[0].toUpperCase() + field.substring(1)
+    } must be unique. The specified ${field} = ${fieldValue} is already associated with an account.`
+  }
+
+  // if (err.name && err.name === 'CastError') {
+  //   if(err.path && err.value
   //   error = new AppError(`Invalid ${err.path}: ${err.value}`, 400, 'castError')
-  // } else if (err.code === 11000) {
-  //   const field = Object.keys(err.keyValue)[0]
-  //   const fieldValue = Object.values(err.keyValue)[0]
-  //   error = new AppError(
-  //     `${
-  //       field[0].toUpperCase() + field.substring(1)
-  //     } must be unique.  The specified ${field} = ${fieldValue} is already associated with a YRL account.`,
-  //     400,
-  //     'not-unique'
-  //   )
+
   // } else if (err.name === 'ValidationError') {
   //   let errorStr =''
   //   if (err.errors) errorStr= Object.values(err.errors).map((item) => item.message)
@@ -54,7 +59,7 @@ const errorHandler = (err: Error, req: Request, res: Response, next: NextFunctio
   // } else if (err.name === 'TokenExpiredError') {
   //   error = new AppError(`Your token has expired. please login`, 401, 'tokenExpiredError')
   // } else error = err
-  // sendError(res, error)
+  sendError(res, err)
 }
 
 export default errorHandler

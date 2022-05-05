@@ -15,9 +15,9 @@ services:
     # ports:
     # - 5000:5000
     # volumes:
-    #   - ./:/app
+    # - ./:/app
     #   - /app/node_modules
-    #   - /app/dist
+    # - /app/dist
     environment:
       - NODE_ENV=production
     # environment:
@@ -26,7 +26,7 @@ services:
     #   DB_URL: mongodb://mongo_db:27017
     # env_file:
     # - ./.env
-    command: node dist/src/server.js
+    # command: node dist/src/server.js
 
     # depends_on:
     #   - mongo_db

@@ -43,19 +43,20 @@ const sendTokenResponse = async (res: Response, statusCode: number, user: IUser)
 const signup = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
   console.log('RB', req.body)
   // const { user, completeSingupUrl, emailSubject } = req.body
+  const { name, email } = req.body
   // const { user } = req.body
   // const customer = await stripe.customers.create({ ...user })
   // if (customer) user.stripeCustomerId = customer.id
   // console.log('CUSTOMER', customer)
   const doc = await User.create({
-    name: req.body.name,
-    email: req.body.email,
+    name,
+    email,
     password: '#0elhEHh*3Uyc$r^JQ@Nit3&f!U3i',
   })
   if (!doc) return next(new AppError(`We can't create user ${req.body.name}`, 404, 'unable_to_create_user'))
-  // const resetToken = await doc.createPasswordResetToken()
-  // await doc.save()
-  // doc.password = undefined
+  const resetToken = await doc.createPasswordResetToken()
+  await doc.save()
+  doc.password = undefined
   // await new sendEmail({
   //   name: user.name,
   //   email: user.email,
@@ -65,8 +66,8 @@ const signup = asyncHandler(async (req: Request, res: Response, next: NextFuncti
 
   res.status(200).json({
     status: 'success',
-    message: 'Email sent',
-    doc,
+    // message: 'Email sent',
+    token: resetToken,
   })
 })
 
