@@ -2,7 +2,7 @@ import { Router } from 'express'
 
 // import { updateLoggedInData, deleteLoggedIn, fetchLoggedIn } from '../controllers/users'
 
-import { fetchAll, createDoc } from '../controllers/users'
+import { fetchAll, createDoc } from '../../controllers/users'
 // import { protect, authorize } from '../controllers/auth'
 
 const router = Router()

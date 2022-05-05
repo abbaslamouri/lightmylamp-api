@@ -5,4 +5,6 @@ export default {
   DB_USER: process.env.DB_USER || '',
   DB_PASSWORD: process.env.DB_PASSWORD || '',
   PORT: process.env.PORT || 4000,
+  REDIS_IP: process.env.REDIS_IP || 'redis',
+  SESSION_SECRET: process.env.JWT_SECRET as string,
 }

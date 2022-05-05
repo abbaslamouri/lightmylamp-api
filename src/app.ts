@@ -1,12 +1,22 @@
 import express, { Request, Response } from 'express'
 import errorHandler from './utils/errorHandler'
-// import connectRedis from 'connect-redis';
-// import session from 'express-session';
-// const RedisStore = connectRedis(session);
+// import connectRedis from 'connect-redis'
+// import session from 'express-session'
 import config from './config/default'
-import categoryRouter from './routes/categories'
-import authRouter from './routes/auth'
-import userRouter from './routes/users'
+import categoryRouter from './routes/v1/categories'
+import authRouter from './routes/v1/auth'
+import userRouter from './routes/v1/users'
+
+// const RedisStore = connectRedis(session)
+
+// app.use(
+//   session({
+//     secret: 'keyboard cat',
+//     resave: false,
+//     saveUninitialized: true,
+//     cookie: { secure: true },
+//   })
+// )
 
 console.log(config.PORT)
 
