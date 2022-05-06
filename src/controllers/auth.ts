@@ -56,6 +56,9 @@ const signup = asyncHandler(async (req: Request, res: Response, next: NextFuncti
   if (!doc) return next(new AppError(`We can't create user ${req.body.name}`, 404, 'unable_to_create_user'))
   // const resetToken = await doc.createPasswordResetToken()
   await doc.save()
+  // req.session.user = doc
+  // console.log('RS', req.session)
+  // req.session.user = doc
   // doc.password = undefined
   // await new sendEmail({
   //   name: user.name,

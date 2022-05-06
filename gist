@@ -11,6 +11,12 @@ docker container prune -fv
 docker image prune -a
 
 docker exec -it lightmylamp-api-api-1 bash
+docker exec -it lightmylamp-api-redis-1 bash
+
+lightmylamp-api-redis-1
+
+  REDIS_IP: process.env.REDIS_IP || 'redis',
+
 
 docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
 docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build

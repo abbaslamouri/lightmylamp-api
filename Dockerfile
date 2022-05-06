@@ -13,7 +13,7 @@ COPY . .
 # RUN if [ "$NODE_ENV" = "production" ]; \
 RUN npm run build
   # fi
-ENV PORT 4000
+ENV PORT 5000
 EXPOSE $PORT
 RUN ls -la
 
