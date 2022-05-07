@@ -47,7 +47,7 @@ app.get('/api/v1/ping', async (req: Request, res: Response) => {
   res.status(200).json({
     status: `success ${config.PORT}`,
     message: 'pong',
-    response: `Sending response from container!!! ${os.hostname()}`,
+    response: `Sending response from container ${os.hostname()}`,
   })
 })
 
