@@ -13,7 +13,7 @@ services:
   api:
     deploy:
       mode: replicated
-      replicas:
+      replicas: 1
       restart_policy:
         delay: 5s
       update_config:
