@@ -9,6 +9,7 @@ services:
   #     - mongo_db:/data/db
   api:
     deploy:
+      mode: replicated
       replicas: 8
       restart_policy:
         delay: 5s
