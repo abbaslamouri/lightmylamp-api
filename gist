@@ -20,11 +20,17 @@ lightmylamp-api-redis-1
 
 docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
 docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build --scale api=3 --no-deps api
+
 
 docker-compose down 
 
 mongo -u "lightmylamp-db-user" -p "Wjshg^&JXslsp"
 
 printenv
+
+docker image tag lightmylamp-api_api abbaslamouri/lightmylamp-api
+
+docker push abbaslamouri/lightmylamp-api
 
 

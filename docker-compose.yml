@@ -12,6 +12,7 @@ services:
 
   api:
     build: .
+    image: abbaslamouri/lightmylamp-api
     # ports:
     #   - 5000:4000
     # volumes:
