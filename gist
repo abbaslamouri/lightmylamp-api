@@ -62,6 +62,8 @@ ip add
 
 docker swarm init --advertise-addr 159.223.108.41
 
+
+
 To add a worker to this swarm, run the following command:
 
     docker swarm join --token SWMTKN-1-4grcp95eo9yzfhkyedafpm70ebppmoniba9oxlpenswwfn3lye-avogp3tozr5mhak6r4fs82ruh 159.223.108.41:2377
