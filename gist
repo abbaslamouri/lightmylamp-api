@@ -62,6 +62,8 @@ ip add
 
 docker swarm init --advertise-addr 159.223.108.41
 
+docker swarm init --advertise-addr 172.30.0.1
+
 
 
 To add a worker to this swarm, run the following command:
@@ -73,6 +75,8 @@ To add a manager to this swarm, run 'docker swarm join-token manager' and follow
 docker stack deploy -c docker-compose.yml -c docker-compose.prod.yml lightmylamp
 
 docker stack services lightmylamp
+
+docker swarm leave -f
 
 
 
