@@ -11,8 +11,18 @@ services:
   #  - NGINX_PORT=80
 
   api:
+    deploy:
+      mode: replicated
+      replicas: 4
+      restart_policy:
+        delay: 5s
+        max_attempts: 3
+      update_config:
+        parallelism: 2
+        delay: 10s
+        order: stop-first
     build: .
-    # image: abbaslamouri/lightmylamp-api
+    image: abbaslamouri/lightmylamp-api
     # ports:
     #   - 5000:4000
     # volumes:
