@@ -10,7 +10,7 @@ services:
   api:
     deploy:
       mode: replicated
-      replicas: 8
+      replicas: 4
       restart_policy:
         delay: 5s
         max_attempts: 3
