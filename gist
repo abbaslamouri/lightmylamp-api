@@ -23,14 +23,51 @@ docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build --scale api=3 --no-deps api
 
 
+
+
 docker-compose down 
 
 mongo -u "lightmylamp-db-user" -p "Wjshg^&JXslsp"
 
 printenv
 
+
+
 docker image tag lightmylamp-api_api abbaslamouri/lightmylamp-api
 
-docker push abbaslamouri/lightmylamp-api
+// Build api service image to push to docker hub
+docker compose -f docker-compose.yml -f docker-compose.prod.yml build api
+
+// Push service to docker hub
+docker compose -f docker-compose.yml -f docker-compose.prod.yml push api
+
+// Pull service to docker hub
+docker compose -f docker-compose.yml -f docker-compose.prod.yml pull api
+
+// update api container
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --scale api=3 --no-deps api
+
+// Watchtower
+docker run -d -e WATCHTOWER_TRACE=true -e WATCHTOWER_DEBUG=true -e WATCHTOWER_POLL_INTERVAL=20 --name watchtower -v /var/run/docker.sock:/var/run/docker.sock containrrr/watchtower <container> 
+
+// Docker settings
+docker info
+
+
+
+// Initialize docker swarm
+docker swarm init
+
+ip add
+
+docker swarm init --advertise-addr 159.223.108.41
+
+To add a worker to this swarm, run the following command:
+
+    docker swarm join --token SWMTKN-1-4grcp95eo9yzfhkyedafpm70ebppmoniba9oxlpenswwfn3lye-avogp3tozr5mhak6r4fs82ruh 159.223.108.41:2377
+
+To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
+
+
 
 

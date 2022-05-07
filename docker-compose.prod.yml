@@ -8,6 +8,15 @@ services:
   #   volumes:
   #     - mongo_db:/data/db
   api:
+    deploy:
+      replicas: 8
+      restart_policy:
+        delay: 5s
+        max_attempts: 3
+      update_config:
+        parallelism: 2
+        delay: 10s
+        order: stop-first
     build:
       context: .
       args:
