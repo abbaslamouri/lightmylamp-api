@@ -11,14 +11,14 @@ services:
   #  - NGINX_PORT=80
 
   api:
-    image: abbaslamouri/lightmylamp-api
-    deploy:
-      replicas: 4
-      restart_policy:
-        delay: 5s
-      update_config:
-        parallelism: 2
-        delay: 10s
+    # image: abbaslamouri/lightmylamp-api
+    # deploy:
+    #   replicas: 4
+    #   restart_policy:
+    #     delay: 5s
+    #   update_config:
+    #     parallelism: 2
+    #     delay: 10s
     build: .
     # ports:
     #   - 5000:4000
