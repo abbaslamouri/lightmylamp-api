@@ -1,3 +1,6 @@
+Digital Ocean Access Token:
+dop_v1_9f821bf9a4fa0027d0d9be8ce97e07b1675afb410d1f14f2407c8ebef7463587
+
 docker build -t api .
 
 docker run -v /Users/abbaslamouri/Desktop/Sandbox/node/api-ts:/app -p 5000:5000 --name apic api
@@ -10,8 +13,10 @@ docker container prune -fv
 
 docker image prune -a
 
-docker exec -it lightmylamp-api-api-1 bash
-docker exec -it lightmylamp-api-redis-1 bash
+docker inspect 909ddcd43f5d
+
+docker exec -it lightmylamp-api-api-1 /bin/sh
+docker exec -it lightmylamp-api-redis-1 /bin/sh
 
 lightmylamp-api-redis-1
 
@@ -21,6 +26,8 @@ lightmylamp-api-redis-1
 docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
 docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build --scale api=3 --no-deps api
+
+docker logs container-id -f 
 
 
 
@@ -77,6 +84,84 @@ docker stack deploy -c docker-compose.yml -c docker-compose.prod.yml lightmylamp
 docker stack services lightmylamp
 
 docker swarm leave -f
+
+
+
+kubectl get nodes
+
+kubectl het pods
+
+kubectl get svc
+
+kubectl create deployment api --image=abbaslamouri/lightmylamp-api
+
+kubectl logs deploy/api
+
+kubectl expose deploy/api --type=NodePort  --port=80
+
+kubectl logs deploy/api --follow
+
+kubectl scale deployment api --replicas=3
+
+kubectl get pods -w
+
+kubectl create deployment www --image=nginx -o yaml > nginx.yaml
+
+kubectl delete pod api
+
+kubectl exec api -it /bin/sh
+
+kubectl describe pod api
+
+kubectl rollout restart deployment api-deployment
+
+
+////////////////////////////////////////////////
+
+1. Create a DO kubernetes
+
+2. Authenticate to the kubernetes clusetr
+
+3. Deploy application
+  kubectl create ns backend
+  kubectl apply -f api.yaml
+  kubectl -n backend get all
+
+4. Install ingress-nginx controller
+  get chart from artifact hub
+  kubectl create namsepace ingress-nginx
+  helm install ingress-nginx ingress-nginx/ingress-nginx -n ingress-nginx -f nginx-values.yaml
+
+5. Configure DNS
+  change domain  nameservers at registrar
+  Add domain under networking
+  add 2 A records to domain
+
+6. Configure ingress rules to point domains
+  comment the tls portion of this file for now
+  kubectl apply -f ingress-nginx.yaml
+
+7. configure tls
+  Fetch the cert-manger chart from artifacthub
+  Before installing the chart, you must first install the cert-manager CustomResourceDefinition resources. This is performed in a separate step to allow you to easily uninstall and reinstall cert-manager without deleting your installed custom resources (see ArtifactHUB fordetails)
+
+  kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.8.0/cert-manager.crds.yaml
+
+  helm install cert-manager -n cert-manager --version v1.8.0 jetstack/cert-manager -f cert-manager-values.yaml
+
+8.  Deply cert-manager with letsencrypt
+  kubectl apply -f cert-issuer.yaml
+  uncomment tls portion of ingress-nginx.yaml
+  kubectl apply -f ingress-nginx.yaml
+
+9.  Enable proxy protocol
+    update nginx-values.yaml
+    helm upgrade ingress-nginx ingress-nginx/ingress-nginx -n ingress-nginx -f nginx-values.yaml
+
+
+
+
+
 
 
 

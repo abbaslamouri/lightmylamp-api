@@ -1,0 +1,3 @@
+installCRDs: false
+proetheus:
+  enabled: false

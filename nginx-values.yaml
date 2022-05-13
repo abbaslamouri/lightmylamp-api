@@ -1,0 +1,21 @@
+controller:
+  replicaCount: 2
+  resources:
+    requests:
+      cpu: 100m
+      memory: 90Mi
+  service:
+    type: LoadBalancer
+    annotations:
+      # Enable proxy protocol
+      service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: "true"
+      # Specify whether the DigitalOcean Load Balancer should pass encrypted data to backend droplets
+      service.beta.kubernetes.io/do-loadbalancer-tls-passthrough: "true"
+  config:
+    use-proxy-protocol: "true"
+    keep-alive-requests: "10000"
+    upstream-keepalive-requests: "1000"
+    worker-processes: "auto"
+    max-worker-connections: "65535"
+    use-gzip: "true"
+

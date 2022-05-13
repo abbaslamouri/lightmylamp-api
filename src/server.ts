@@ -9,15 +9,19 @@ dotenv.config()
 
 const dbUrl = `mongodb://${config.DB_USER}:${config.DB_PASSWORD}@${config.DB_IP}:${config.DB_PORT}`
 
-mongoose
-  .connect(dbUrl, { dbName: config.DB_NAME })
-  .then(() => {
-    console.log(colors.magenta.bold(`Database connection succesfull`))
-    app.listen(config.PORT, () => {
-      console.log(colors.cyan.bold(`server running on port ${config.PORT}...`))
-    })
-  })
-  .catch((err) => {
-    console.log(colors.red.bold(`Mongo DB Error ${err}`))
-    console.log(colors.red.bold(`Mongo DB Error Message ${err.message}`))
-  })
+// mongoose
+//   .connect(dbUrl, { dbName: config.DB_NAME })
+//   .then(() => {
+//     console.log(colors.magenta.bold(`Database connection succesfull`))
+//     app.listen(config.PORT, () => {
+//       console.log(colors.cyan.bold(`server running on port ${config.PORT}...`))
+//     })
+//   })
+//   .catch((err) => {
+//     console.log(colors.red.bold(`Mongo DB Error ${err}`))
+//     console.log(colors.red.bold(`Mongo DB Error Message ${err.message}`))
+//   })
+
+app.listen(config.PORT, () => {
+  console.log(colors.cyan.bold(`server running on port ${config.PORT}...`))
+})
