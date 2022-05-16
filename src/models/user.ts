@@ -9,7 +9,7 @@ interface IPhone {
   phoneCountryCode: Types.ObjectId
 }
 
-interface IshippingAddress {
+interface IShippingAddress {
   company: string
   name: string
   email: string
@@ -39,7 +39,7 @@ interface IUser {
   name: string
   email: string
   title: string
-  shippingAddresses: Array<IshippingAddress>
+  shippingAddresses: Array<IShippingAddress>
   billingAddress: IBillingAddress
   description: string
   sortOrder: Number
@@ -203,7 +203,7 @@ schema.pre('save', async function (next) {
 })
 
 schema.methods.getSinedJwtToken = async function () {
-  return jwt.sign({ id: this._id }, process.env.JWT_SECRET as string, { expiresIn: process.env.JWT_EXPIRES_IN })
+  return jwt.sign({ id: this._id }, process.env.JWT_SECRET!, { expiresIn: process.env.JWT_EXPIRES_IN })
 }
 
 schema.methods.checkPassword = async function (password: string, hash: string) {

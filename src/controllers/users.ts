@@ -16,7 +16,7 @@ const fetchAll = asyncHandler(async (req: Request, res: Response, next: NextFunc
 const createDoc = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
   console.log('CRREATING', req.body)
   const doc = await User.create(req.body)
-  if (!doc) return next(new AppError(`We can't create document ${req.body.name}`, 404, 'user_creation_failed'))
+  if (!doc) return next(new AppError(`We can't create document ${req.body.name}`, 404))
   res.status(201).json({
     status: 'success',
     doc,

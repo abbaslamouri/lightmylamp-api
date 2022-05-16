@@ -1,29 +1,36 @@
 import { Request, Response, NextFunction } from 'express'
 import colors from 'colors'
+import AppError from './AppError'
 
-const sendError = (res: Response, err: any) => {
-  const status = err.status ? err.status : 'error'
-  const statusCode = err.statusCode ? err.statusCode : 500
-  if (process.env.NODE_ENV === 'production') {
-    let message = ''
-    if (err.custom) message = err.message
-    else message = 'Something went terribly wrong'
-    res.status(statusCode).json({
-      status,
-      message,
-    })
-  }
+const sendError = (res: Response, err: AppError) => {
+  // const statusCode = err.statusCode ? err.statusCode : 500
+  // const message = err.message ? err.message : 'Something went terribly wrong'
+
+  // const status = err.status ? err.status : 'error'
+  // const statusCode = err.statusCode ? err.statusCode : 500
   if (process.env.NODE_ENV === 'development') {
-    res.status(statusCode).json({
+    res.status(err.statusCode).json({
+      status: err.status,
       message: err.message,
       err: err,
       stack: err.stack,
     })
   }
+  if (process.env.NODE_ENV === 'production') {
+    // let message = ''
+    // if (err.custom) message = err.message
+    // else message = 'Something went terribly wrong'
+    res.status(err.statusCode).json({
+      status: err.status,
+      message: err.message,
+    })
+  }
 }
 
-const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
+const errorHandler = (err: AppError, req: Request, res: Response, next: NextFunction) => {
   console.log(colors.red.bold(`ERRRRRR', ${err}`))
+
+  // const sendObj = {}
   // res.json({
   //   message: err.message,
   //   err: err,
@@ -33,17 +40,22 @@ const errorHandler = (err: any, req: Request, res: Response, next: NextFunction)
   // res.status(500).json('error', { error: err })
   // let error = { ...err }
   // console.log('AAAAAAA', typeof err, object)
-  if (err.custom) {
-  }
 
-  if (err.code === 11000) {
+  // Custom errors
+  // if (err.custom) {
+  // }
+
+  // Mongodb errors
+  if (err.code && err.code === 11000) {
     err.statusCode = 400
-    err.custom = true
-    const field = Object.keys(err.keyValue)[0]
-    const fieldValue = Object.values(err.keyValue)[0]
-    err.message = `${
-      field[0].toUpperCase() + field.substring(1)
-    } must be unique. The specified ${field} = ${fieldValue} is already associated with an account.`
+    // err.custom = true
+    if (err.keyValue) {
+      const field = Object.keys(err.keyValue)[0]
+      const fieldValue = Object.values(err.keyValue)[0]
+      err.message = `${
+        field[0].toUpperCase() + field.substring(1)
+      } must be unique. The specified ${field} = ${fieldValue} is already associated with an account.`
+    }
   }
 
   // if (err.name && err.name === 'CastError') {

@@ -113,7 +113,7 @@ kubectl exec api -it /bin/sh
 
 kubectl describe pod api
 
-kubectl rollout restart deployment api-deployment
+kubectl rollout restart deployment api-depl
 
 
 ////////////////////////////////////////////////
@@ -158,6 +158,18 @@ kubectl rollout restart deployment api-deployment
     update nginx-values.yaml
     helm upgrade ingress-nginx ingress-nginx/ingress-nginx -n ingress-nginx -f nginx-values.yaml
 
+10.Connect database
+   create db yaml
+   update source code 
+
+   kubectl rollout restart deployment -n backend api-depl
+
+
+
+
+   env:
+            - name: DB_URI
+              value: 'mongodb://db-svc:27017/lightmylamp-api'
 
 
 

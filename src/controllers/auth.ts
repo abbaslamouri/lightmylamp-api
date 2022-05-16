@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import { IUser, User } from '../models/user'
 
-// import jwt from 'jsonwebtoken'
+import jwt from 'jsonwebtoken'
 import Stripe from 'stripe'
 // import sgMail from'@sendgrid/mail'
 import crypto from 'crypto'
@@ -53,7 +53,7 @@ const signup = asyncHandler(async (req: Request, res: Response, next: NextFuncti
     email,
     password: '#0elhEHh*3Uyc$r^JQ@Nit3&f!U3i',
   })
-  if (!doc) return next(new AppError(`We can't create user ${req.body.name}`, 404, 'unable_to_create_user'))
+  if (!doc) return next(new AppError(`We can't create user ${req.body.name}`, 404))
   // const resetToken = await doc.createPasswordResetToken()
   await doc.save()
   // req.session.user = doc
@@ -81,9 +81,8 @@ const completeSignup = asyncHandler(async (req: Request, res: Response, next: Ne
     passwordResetToken: hashedToken,
     passwordResetExpires: { $gt: Date.now() },
   })
-  if (!user)
-    return next(new AppError(`Your registration token is invlaid or has expired`, 400, 'invalid_registration_token'))
-  if (user.email !== req.body.email.toLowerCase()) return next(new AppError(`Invalid email`, 400, 'invalid_email'))
+  if (!user) return next(new AppError(`Your registration token is invlaid or has expired`, 400))
+  if (user.email !== req.body.email.toLowerCase()) return next(new AppError(`Invalid email`, 400))
   user.password = req.body.password
   user.passwordResetToken = undefined
   user.passwordResetExpires = undefined
@@ -97,11 +96,11 @@ const completeSignup = asyncHandler(async (req: Request, res: Response, next: Ne
 
 const signin = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
   const { email, password } = req.body
-  if (!email || !password) return next(new AppError('Email and Password are required', 401, 'email_password_required'))
+  if (!email || !password) return next(new AppError('Email and Password are required', 401))
   const user = await User.findOne({ email }).select('+password')
-  if (!user) return next(new AppError('Invalid email or password', 401, 'invalid_email'))
+  if (!user) return next(new AppError('Invalid email or password', 401))
   const passwordCheck = await user.checkPassword(password, user.password as string)
-  if (!passwordCheck) return next(new AppError('Invalid email or password', 401, 'invalid_password'))
+  if (!passwordCheck) return next(new AppError('Invalid email or password', 401))
   sendTokenResponse(res, 200, user)
 })
 
@@ -120,22 +119,20 @@ const signout = asyncHandler(async (req: Request, res: Response, next: NextFunct
 })
 
 // const protect = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-// let token = ''
-// if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-//   token = req.headers.authorization.split(' ')[1]
-// } else if (req.cookies && req.cookies.jwt) {
-//   token = req.cookies.jwt
-// }
-// if (!token)
-//   return next(new AppError('You are not allowed to access these resources, please login', 401, 'resources_forbiden'))
-// const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET)
-// const decodedUser = await User.findById(decoded.id)
-// if (!decodedUser)
-//   return next(new AppError('We cannot find a user with this token in our database', 401, 'no_user_token'))
-// if (await decodedUser.hasPasswordChanged(decoded.iat))
-//   return next(new AppError('User changed password recently, please login again', 401, 'password_changed_recently'))
-// req.user = decodedUser
-// next()
+//   let token = ''
+//   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+//     token = req.headers.authorization.split(' ')[1]
+//   } else if (req.cookies && req.cookies.jwt) {
+//     token = req.cookies.jwt
+//   }
+//   if (!token) return next(new AppError('You are not allowed to access these resources, please login', 401))
+//   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET)
+//   const decodedUser = await User.findById(decoded.id)
+//   if (!decodedUser) return next(new AppError('We cannot find a user with this token in our database', 401))
+//   if (await decodedUser.hasPasswordChanged(decoded.iat))
+//     return next(new AppError('User changed password recently, please login again', 401))
+//   req.user = decodedUser
+//   next()
 // })
 
 // const authorize = (...roles:string[]) =>
@@ -159,10 +156,9 @@ const signout = asyncHandler(async (req: Request, res: Response, next: NextFunct
 
 const forgotPassword = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
   const { email, passwordResetUrl, emailSubject } = req.body
-  if (!email) return next(new AppError('Please enter a valid email', 404, 'email_invalid'))
+  if (!email) return next(new AppError('Please enter a valid email', 404))
   const user = await User.findOne({ email })
-  if (!user)
-    return next(new AppError('We cannot find user with this email in our database', 404, 'inadequate_permission'))
+  if (!user) return next(new AppError('We cannot find user with this email in our database', 404))
   const resetToken = await user.createPasswordResetToken()
   await user.save({ validateBeforeSave: false })
   user.password = undefined
@@ -183,7 +179,7 @@ const resetPassword = asyncHandler(async (req: Request, res: Response, next: Nex
   console.log('RP', req.params)
   const hashedToken = await crypto.createHash('sha256').update(req.params.token).digest('hex')
   const user = await User.findOne({ passwordResetToken: hashedToken, passwordResetExpires: { $gt: Date.now() } })
-  if (!user) return next(new AppError('Token is invlaid or has expired', 400, 'token_expired'))
+  if (!user) return next(new AppError('Token is invlaid or has expired', 400))
   user.password = req.body.password
   user.passwordResetToken = undefined
   user.passwordResetExpires = undefined

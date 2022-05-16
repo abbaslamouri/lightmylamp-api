@@ -1,6 +1,7 @@
 import os from 'os'
 import express, { Request, Response } from 'express'
 import cors from 'cors'
+import AppError from './utils/AppError'
 // import { createClient } from 'redis'
 // import connectRedis from 'connect-redis'
 // import session from 'express-session'
@@ -23,7 +24,7 @@ import userRouter from './routes/v1/users'
 // })
 
 const app = express()
-app.enable('trust proxy')
+app.set('trust proxy', true)
 app.use(cors({}))
 
 // app.use(
@@ -39,9 +40,6 @@ app.use(cors({}))
 app.use(express.json({ limit: '1000kb' }))
 app.use(express.urlencoded({ extended: true }))
 
-app.use('/api/v1/categories', categoryRouter)
-app.use('/api/v1/auth', authRouter)
-app.use('/api/v1/users', userRouter)
 app.get('/api/v1/ping', async (req: Request, res: Response) => {
   console.log(`Sending response from container ${os.hostname()}`)
   res.status(200).json({
@@ -49,6 +47,12 @@ app.get('/api/v1/ping', async (req: Request, res: Response) => {
     message: 'pong',
     response: `Sending response from container ${os.hostname()}`,
   })
+})
+app.use('/api/v1/categories', categoryRouter)
+app.use('/api/v1/auth', authRouter)
+app.use('/api/v1/users', userRouter)
+app.all('*', async (req: Request, res: Response, next) => {
+  next(new AppError(`Can't find ${req.originalUrl} on this server`, 404))
 })
 
 app.use(errorHandler)
